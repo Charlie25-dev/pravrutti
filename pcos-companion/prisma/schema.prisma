@@ -1,0 +1,176 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum UrgencyLevel {
+  ROUTINE
+  SOON
+  URGENT
+  EMERGENCY
+}
+
+enum ConsentType {
+  DATA_STORAGE
+  SYMPTOM_TRACKING
+  OPTIONAL_ANALYTICS
+}
+
+model User {
+  id                   String                 @id @default(uuid())
+  email                String                 @unique
+  name                 String?
+  dateOfBirth          DateTime
+  countryCode          String                 @default("IN")
+  role                 Role                   @default(USER)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  guardianConsent      GuardianConsent?
+  consents             UserConsent[]
+  medicalProfile       MedicalProfile?
+  medicalHistory       MedicalHistoryEntry[]
+  labResults           LabResult[]
+  medications          Medication[]
+  cycleLogs            CycleLog[]
+  habitLogs            HabitLog[]
+  assessments          Assessment[]
+  settings             UserSettings?
+  notificationPrefs    NotificationPreference?
+}
+
+model GuardianConsent {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guardianEmail   String
+  status          String    @default("PENDING") // PENDING | VERIFIED | REVOKED
+  verifiedAt      DateTime?
+  legalNoticeRef  String    @default("v1.0-legal-counsel-review-pending")
+  createdAt       DateTime  @default(now())
+}
+
+model UserConsent {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        ConsentType
+  granted     Boolean     @default(false)
+  updatedAt   DateTime    @updatedAt
+}
+
+model MedicalProfile {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pcosStatus        String   // Encrypted: DIAGNOSED | SUSPECTED | NOT_SURE
+  diagnosisDate     DateTime?
+  menarcheAge       Int?
+  notesEncrypted    String?  // AES-256-GCM Encrypted
+  updatedAt         DateTime @updatedAt
+}
+
+model MedicalHistoryEntry {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  condition     String   // Encrypted
+  diagnosedYear Int?
+  notes         String?  // Encrypted
+  createdAt     DateTime @default(now())
+}
+
+model LabResult {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  testName    String   // e.g. "Total Testosterone", "Fasting Insulin", "TSH"
+  numericVal  Float?
+  unit        String   // "ng/dL", "uIU/mL", etc.
+  testedAt    DateTime
+  notes       String?  // Encrypted
+  createdAt   DateTime @default(now())
+}
+
+model Medication {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String   // Encrypted
+  dosage      String?  // Encrypted
+  frequency   String?  // Encrypted
+  startDate   DateTime?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model CycleLog {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startDate   DateTime
+  endDate     DateTime?
+  flow        String    // "LIGHT" | "MEDIUM" | "HEAVY"
+  painLevel   Int?      // 1 to 10
+  notes       String?   // Encrypted
+  createdAt   DateTime  @default(now())
+}
+
+model HabitLog {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          DateTime
+  habitCategory String   // "SLEEP" | "NUTRITION" | "MOVEMENT" | "STRESS"
+  completed     Boolean  @default(false)
+  value         String?  // e.g. "8_hours", "protein_breakfast"
+  createdAt     DateTime @default(now())
+  @@unique([userId, date, habitCategory, value])
+}
+
+model Assessment {
+  id              String       @id @default(uuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  urgencyLevel    UrgencyLevel
+  score           Float
+  rulesVersion    String       // e.g. "1.0.0"
+  ruleSet         String       // "adult" | "adolescent"
+  answersPayload  String       // AES-256-GCM Encrypted JSON
+  whyExplanation  String       // Encrypted
+  helpfulFeedback Boolean?
+  createdAt       DateTime     @default(now())
+}
+
+model UserSettings {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  language       String   @default("en")
+  theme          String   @default("system")
+  textSize       String   @default("normal")
+  pinEnabled     Boolean  @default(false)
+  pinHash        String?
+  discreetMode   Boolean  @default(false)
+  updatedAt      DateTime @updatedAt
+}
+
+model NotificationPreference {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyReminders Boolean  @default(false)
+  reminderTime   String?  // e.g. "20:00"
+  emailAlerts    Boolean  @default(false)
+  webPushAlerts  Boolean  @default(false)
+  updatedAt      DateTime @updatedAt
+}

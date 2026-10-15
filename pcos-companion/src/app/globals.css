@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@theme {
+  --color-purple-50: #FDF6FA;
+  --color-purple-100: #F9EAF3;
+  --color-purple-200: #F2D5E6;
+  --color-purple-300: #E4B3D2;
+  --color-purple-400: #CB82B2;
+  --color-purple-500: #A8538E;
+  --color-purple-600: #783569;
+  --color-purple-700: #54224A;
+  /* Iconic Ritvya Dark Plum */
+  --color-purple-800: #421B3A;
+  --color-purple-900: #33152D;
+  --color-purple-950: #1D0A19;
+
+  --color-teal-50: #FAF4F6;
+  --color-teal-100: #F3E2E9;
+  --color-teal-200: #E8C5D3;
+  --color-teal-500: #C47D9A;
+  /* Dusty Rose / Petal Pink */
+  --color-teal-600: #A85A7B;
+  --color-teal-700: #884160;
+  --color-teal-800: #6D324C;
+}
+
+@layer base {
+  :root {
+    --bg-warm: #FAF4F3;
+    /* Porcelain / Creamy blush matching icon background */
+    --card-light: #FFFFFF;
+    --text-primary: #2B1628;
+    --text-secondary: #65405F;
+    --text-muted: #8C6684;
+
+    /* Brand Ritvya Plum & Dusty Rose */
+    --brand-50: #FDF6FA;
+    --brand-100: #F9EAF3;
+    --brand-200: #F2D5E6;
+    --brand-500: #A8538E;
+    --brand-600: #783569;
+    --brand-700: #54224A;
+
+    /* Calming Rose & Petal */
+    --teal-50: #FAF4F6;
+    --teal-100: #F3E2E9;
+    --teal-500: #C47D9A;
+    --teal-600: #A85A7B;
+
+    /* Sage Positive Reinforcement */
+    --sage-50: #F0FDF4;
+    --sage-500: #10B981;
+
+    /* Urgency Colors */
+    --urgency-routine: #2A9D8F;
+    --urgency-soon: #E09F3E;
+    --urgency-urgent: #E76F51;
+    --urgency-emergency: #C43B5D;
+  }
+
+  .dark {
+    --bg-warm: #140C15;
+    /* Midnight plum */
+    --card-light: #1E1220;
+    /* Dark plum card */
+    --text-primary: #F7EFF5;
+    --text-secondary: #D4BDCE;
+    --text-muted: #A38CA0;
+
+    --brand-50: #291226;
+    --brand-100: #381A34;
+    --brand-200: #50274B;
+    --brand-500: #D882B9;
+    --brand-600: #C268A2;
+    --brand-700: #A8508A;
+
+    --teal-50: #2A1724;
+    --teal-100: #3D2235;
+    --teal-500: #D48DA6;
+    --teal-600: #B86F8A;
+
+    --sage-50: #052E16;
+    --sage-500: #34D399;
+  }
+}
+
+body {
+  background-color: var(--bg-warm);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Devanagari", "Noto Sans Kannada", "Noto Sans Tamil", "Noto Sans Telugu", sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar in Ritvya Mulberry */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 53, 105, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 53, 105, 0.45);
+}
+
+/* Screen-reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
